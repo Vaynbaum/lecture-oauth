@@ -7,10 +7,13 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import HTMLResponse
 from starlette.responses import RedirectResponse
 
-CLIENT_ID = "235694458387-3rni6dlbi635e1ghgr72in281u0d8tu7.apps.googleusercontent.com"
-CLIENT_SECRET = "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"
+# Заменить CLIENT_ID и CLIENT_SECRET на свои полученные в Google Console API
+# Настройки OAuth
+CLIENT_ID = "XXXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.apps.googleusercontent.com"
+CLIENT_SECRET = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 SECRET_KEY = "cTlpQmB8MbDtsf6wzOQi0P2rfwEXy3sBD49wCn5I"
 
+# Настройки OAuth
 config_data = {"GOOGLE_CLIENT_ID": CLIENT_ID, "GOOGLE_CLIENT_SECRET": CLIENT_SECRET}
 starlette_config = Config(environ=config_data)
 oauth = OAuth(starlette_config)
@@ -19,8 +22,9 @@ oauth.register(
     server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
     client_kwargs={"scope": "email profile openid"},
 )
-
+# Создайте приложение
 app = FastAPI()
+# Настройте промежуточное программное обеспечение для чтения сеанса запроса
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 
 
@@ -41,9 +45,8 @@ async def logout(request: Request):
 
 @app.route("/login")
 async def login(request: Request):
-    redirect_uri = request.url_for(
-        "auth"
-    )  # This creates the url for our /auth endpoint
+    # Это создает URL-адрес для нашей конечной точки /auth
+    redirect_uri = request.url_for("auth")
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
