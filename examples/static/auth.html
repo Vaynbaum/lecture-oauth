@@ -1,0 +1,40 @@
+<html>
+
+<head>
+    <title>Войти</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <form id="authform">
+        <div>Войти</div>
+        <input type="email" placeholder="email" name="username">
+        <input type="password" placeholder="password" name="password">
+        <input type="submit" value="Отправить">
+    </form>
+</body>
+<script>
+    // получаем форму из DOM
+    const formElement = document.getElementById('authform');
+    // добавляем обработчик события submit
+    formElement.addEventListener('submit', (e) => {
+        // отменяем стандартное поведение формы
+        e.preventDefault();
+
+        let requestOptions = {
+            method: 'POST',
+            body: new FormData(formElement),
+            redirect: 'follow'
+        };
+
+        fetch("/signin", requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                window.sessionStorage.setItem("token", result['access_token'])
+                window.location = '/static/main.html'
+            })
+            .catch(error => console.log('error', error));
+    });
+</script>
+
+</html>

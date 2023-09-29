@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Главная</title>
+</head>
+
+<body>
+    <form id="mainform">
+        <div>Спросить</div>
+        <input type="text" placeholder="Сообщение" name="text">
+        <input type="submit" value="Отправить">
+    </form>
+    <div id="data-enpoint"></div>
+</body>
+<script>
+    const divElement = document.getElementById('data-enpoint');
+    const formElement = document.getElementById('mainform');
+    formElement.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        let myHeaders = new Headers();
+        myHeaders.append("Authorization",
+            `Bearer ${window.sessionStorage.getItem('token')}`
+        );
+        myHeaders.append("Content-Type", "application/json");
+        let formdata = new FormData(formElement)
+        var raw = JSON.stringify({
+            "text": formdata.get("text"),
+        });
+        let requestOptions = {
+            method: 'post',
+            headers: myHeaders,
+            body: raw,
+        };
+
+        fetch("/security_enpoint", requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                divElement.innerHTML = `
+                    <p>Данные с закрытого enpoint'а: ${result.text}</p>
+                    <p>Спросил(а): ${result.token}</p>
+                `
+            })
+            .catch(error => console.log('error', error));
+    });
+</script>
+
+</html>
